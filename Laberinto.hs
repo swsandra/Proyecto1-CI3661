@@ -6,6 +6,9 @@ data Laberinto = Trifurcacion (Maybe (Laberinto)) (Maybe (Laberinto)) (Maybe (La
 				| Tesoro String (Maybe (Laberinto))
 				deriving (Show)
 
+{-Instancias-}
+
+
 {-Funciones de Construcción-}
 
 {- Función que retorna un camino sin salida (Trifurcacion
