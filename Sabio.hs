@@ -14,15 +14,18 @@ opcionesDisponibles = [
     ("8", "Hablar de un laberinto de nombre conocido")
     ]
 
+contertToString :: (String, String) -> String
+contertToString (numStr, str) = numStr ++ " .- " ++ str
+
 printMenu :: IO ()
-printMenu = putStr [ (a ++ " .- " ++ b ++ "\n") | (a,b) <- opcionesDisponibles ]
+printMenu = putStr $ foldl (\r (x,y) -> r ++ " " ++ x++ ".- " ++ y ++ "\n") "" opcionesDisponibles
 
 -- Funcion para mostrar las opciones y recibir del user
 mostrarRecibirOpciones :: IO ()
 mostrarRecibirOpciones = do
     printMenu
     i:_ <- getLine
-    if not ((isDigit i) && ((digitToInt i) `elem` [1..8]])) then do
+    if not ((isDigit i) && ((digitToInt i) `elem` [1..8])) then do
         putStrLn "Operación incorrecta. Introduzca una opción válida."
     else
         putStr "do something"
