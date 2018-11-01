@@ -33,21 +33,22 @@ instruccionesRuta = do
     putStrLn "  r : seguir recto"
     putStrLn "De introducir un caracter invalido se mostrará un mensaje de error"
 
-comenzarLaberintoNuevo :: IO()
+comenzarLaberintoNuevo :: IO Laberinto
 comenzarLaberintoNuevo = do
     let laberintoEnMem = caminoSinSalida
     putStrLn "Se ha borrado el laberinto en Memoria."
     putStrLn "Indique una ruta para poblar el laberinto."
     instruccionesRuta
     i <- getLine
-    construirLaberinto i
-    putStrLn "Se ha poblado el laberinto"
+    let laberintoEnMem = construirLaberinto laberintoEnMem i
+    return laberintoEnMem
 
---construirLaberinto :: [Char] -> IO ()
-construirLaberinto (x:xs) = do
-    let laberintoEnMem = agregarLaberinto (caminoSinSalida) laberintoEnMem x
-    putStr ""
-    
+construirLaberinto :: Laberinto -> [Char] -> Laberinto
+construirLaberinto lab str = if ((length str) == 1) then
+                                agregarLaberinto (caminoSinSalida) lab (head str)
+                             else
+                                agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
+
 
 -- Funcion para mostrar las opciones y recibir del user
 mostrarRecibirOpciones :: IO ()
@@ -58,7 +59,11 @@ mostrarRecibirOpciones = do
         putStrLn "La opción escogida incorrecta. Introduce una opción válida, viajero. \n"
     else
         case (digitToInt i) of 
-            1 -> comenzarLaberintoNuevo
+            1 -> do
+                    let laberintoEnMem = comenzarLaberintoNuevo
+                    putStrLn ""
+            --2 -> do
+                    --let puntoActual = 
             _ -> putStrLn "Do somth else"
     mostrarRecibirOpciones
 
