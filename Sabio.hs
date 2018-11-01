@@ -2,6 +2,7 @@ module Main (main) where
 import Laberinto
 import Data.Char (digitToInt, isDigit)
 import Data.Typeable
+import System.IO
 
 -- Crear laberinto vacio en memoria
 laberintoEnMem :: Laberinto
@@ -32,6 +33,7 @@ instruccionesRuta = do
     putStrLn "  i : girar a la izquierda"
     putStrLn "  r : seguir recto"
     putStrLn "De introducir un caracter invalido se mostrará un mensaje de error"
+    putStrLn "Ejemplo de la ruta derecha-recto-izquierda-derecha: drid"
 
 comenzarLaberintoNuevo :: IO Laberinto
 comenzarLaberintoNuevo = do
@@ -48,7 +50,6 @@ construirLaberinto lab str = if ((length str) == 1) then
                                 agregarLaberinto (caminoSinSalida) lab (head str)
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
-
 
 -- Funcion para mostrar las opciones y recibir del user
 mostrarRecibirOpciones :: IO ()

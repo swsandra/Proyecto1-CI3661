@@ -2,11 +2,14 @@ module Laberinto
 ( Laberinto(..),
   caminoSinSalida,
   agregarLaberinto) where
+
+import System.IO
+
 {- Tipo de Datos: Laberinto 
                     Trifurcacion: izquierda, recto, derecho -}
 data Laberinto = Trifurcacion (Maybe (Laberinto)) (Maybe (Laberinto)) (Maybe (Laberinto))
                 | Tesoro String (Maybe (Laberinto))
-                deriving (Show)
+                deriving (Show, Read, Eq)
 
 {-Instancias de Show y Read-}
 
@@ -32,6 +35,22 @@ agregarLaberinto (Trifurcacion izq recto der) lab 'd' = Trifurcacion izq recto (
 agregarLaberinto (Trifurcacion izq recto der) lab 'i' = Trifurcacion (Just lab) recto der
 agregarLaberinto (Trifurcacion izq recto der) lab 'r' = Trifurcacion izq (Just lab) der
 agregarLaberinto (Trifurcacion izq recto der) lab _ = error "Se debe especificar dirección del camino ('d', 'i' o 'r')"
+
+--Funcion para leer un laberinto de un archivo de texto
+--leerLaberinto :: FilePath -> Laberinto --Esto retorna IO Laberinto, puedes pegarlo directamente en la opcion
+--para  evitar el problema
+leerLaberinto path = do
+    archivo <- openFile path ReadMode
+    contents <- hGetContents archivo
+    return (read contents :: Laberinto) --Comenta esto y descomenta el de abajo cuando vayas a usarlo
+{-    let x = read contents in 
+        do
+            FUNCION QUE CARGA EL LABERINTO, ESTA EN X (para Elvin era cliente [] x, x es el laberinto)
+            hClose archivo-}
+
+escribirLaberinto :: FilePath -> Laberinto -> IO()
+escribirLaberinto path laberinto = writeFile path $ show laberinto
+
 
 --Prueba caminoSinSalida
 --let lab1 = Trifurcacion (Just (Trifurcacion Nothing Nothing (Just (caminoSinSalida)))) (Just (caminoSinSalida)) (Just (Trifurcacion Nothing Nothing (Just (caminoSinSalida))))
