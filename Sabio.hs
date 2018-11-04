@@ -1,14 +1,22 @@
-module Main (main) where
+module Main 
+( main, 
+  laberintoEnMem, 
+  opcionesDisponibles,
+  printMenu,
+  instruccionesRuta,
+  comenzarLaberintoNuevo,
+  construirLaberinto,
+  mostrarRecibirOpciones) where
 import Laberinto
 import Data.Char (digitToInt, isDigit)
 import Data.Typeable
 import System.IO
 
--- Crear laberinto vacio en memoria
+-- | Función que crea una instancia de un Laberinto vacío en memoria.
 laberintoEnMem :: Laberinto
 laberintoEnMem = caminoSinSalida
 
--- Definicion opciones de menu
+-- | Función que define las opciones del menú.
 opcionesDisponibles :: [(String, String)]
 opcionesDisponibles = [
     ("1", "Comenzar a hablar de un laberinto nuevo"),
@@ -21,10 +29,11 @@ opcionesDisponibles = [
     ("8", "Hablar de un laberinto de nombre conocido")
     ]
 
--- Funcion para imprimir menu
+-- | Función para mostrar el menú en pantalla.
 printMenu :: IO ()
 printMenu = putStr $ foldl (\r (x,y) -> r ++ " " ++ x++ ".- " ++ y ++ "\n") "" opcionesDisponibles
 
+-- | Función para mostrar en pantalla las instrucciones de cómo recibir una ruta para un Laberinto.
 instruccionesRuta :: IO()
 instruccionesRuta = do
     putStrLn "Para indicar una ruta, introduzca una cadena de caracteres."
@@ -32,9 +41,10 @@ instruccionesRuta = do
     putStrLn "  d : girar a la derecha"
     putStrLn "  i : girar a la izquierda"
     putStrLn "  r : seguir recto"
-    putStrLn "De introducir un caracter invalido se mostrará un mensaje de error"
+    putStrLn "De introducir un caracter inválido se mostrará un mensaje de error"
     putStrLn "Ejemplo de la ruta derecha-recto-izquierda-derecha: drid"
 
+-- | Función para construir un nuevo Laberinto a partir de una ruta dada por el usuario.
 comenzarLaberintoNuevo :: IO()
 comenzarLaberintoNuevo = do
     let laberintoEnMem = caminoSinSalida
@@ -45,12 +55,12 @@ comenzarLaberintoNuevo = do
     construirLaberinto i
     putStrLn "Se ha poblado el laberinto"
 
---construirLaberinto :: [Char] -> IO ()
+-- | Función auxiliar para construir un laberinto.
 construirLaberinto (x:xs) = do
     let laberintoEnMem = agregarLaberinto (caminoSinSalida) laberintoEnMem x
     putStr ""
 
--- Funcion para mostrar las opciones y recibir del user
+-- | Función para mostrar las opciones y recibir opción del usuario.
 mostrarRecibirOpciones :: IO ()
 mostrarRecibirOpciones = do
     printMenu
@@ -63,6 +73,7 @@ mostrarRecibirOpciones = do
             _ -> putStrLn "Do somth else"
     mostrarRecibirOpciones
 
+-- | Main
 main :: IO ()
 main = do
     putStrLn "¡Bienvenido, aventurero!"

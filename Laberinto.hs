@@ -100,7 +100,7 @@ irRecto (Trifurcacion izq _ der) = error "No hay camino"
     y retorna el Laberinto que comienza en el punto al que conduce 
     esa ruta. La ruta se especifica con indicadores que vienen dados
     por char i, r o d si es izquierda, recto o derecha respectivamente
-    (por ejemplo dird representa el camino derecha-izquierda-recto-derecha).
+    (por ejemplo 'dird' representa el camino derecha-izquierda-recto-derecha).
 -}
 recorrerLaberinto :: Laberinto -> [Char] -> Laberinto
 recorrerLaberinto lab [] = lab
