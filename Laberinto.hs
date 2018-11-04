@@ -1,7 +1,13 @@
 module Laberinto
 ( Laberinto(..),
   caminoSinSalida,
-  agregarLaberinto) where
+  agregarLaberinto,
+  crearTesoro,
+  escribirLaberinto,
+  voltearIzquierda,
+  voltearDerecha,
+  irRecto,
+  recorrerLaberinto) where
 
 import System.IO
 
