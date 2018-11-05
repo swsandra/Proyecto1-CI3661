@@ -40,7 +40,6 @@ comenzarLaberintoNuevo = do
     let laberintoEnMem = construirLaberinto caminoSinSalida i
     putStrLn "Se ha cargado el laberinto. \n"
     mostrarRecibirOpciones laberintoEnMem
-    
 
 construirLaberinto :: Laberinto -> [Char] -> Laberinto
 construirLaberinto lab str = if ((length str) == 1) then
@@ -48,9 +47,43 @@ construirLaberinto lab str = if ((length str) == 1) then
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
 
--- buscarAbrirPared lab str = if ((length str) != 0) then
---                                 if 
+repParedAbiertaMenu lab = do
+    putStrLn "Introduzca una ruta para abrir la pared, de ser posible"
+    instruccionesRuta
+    i <- getLine
+    let laberintoEnMem = reportarParedAbierta lab i
+    putStrLn "Se ha concluido la operación.\n"
+    mostrarRecibirOpciones laberintoEnMem
 
+reportarParedAbierta :: Laberinto -> [Char] -> Laberinto
+reportarParedAbierta lab [] = lab
+reportarParedAbierta lab str =
+                        if (recorrerLaberinto lab ([head str]) == lab) then
+                            if ((length str) == 1) then
+                                agregarLaberinto (lab) caminoSinSalida (head str)
+                            else
+                                agregarLaberinto (lab) (construirLaberinto caminoSinSalida (tail str)) (head str)
+                        else
+                            reportarParedAbierta (recorrerLaberinto lab ([head str])) (tail str)
+
+repDerrumbeMenu lab = do
+    putStrLn "Introduzca una ruta para derrumbar una pared, de ser posible"
+    instruccionesRuta
+    i <- getLine
+    let laberintoEnMem = reportarDerrumbe lab i
+    putStrLn "Se ha concluido la operación.\n"
+    mostrarRecibirOpciones laberintoEnMem
+
+reportarDerrumbe :: Laberinto -> [Char] -> Laberinto
+reportarDerrumbe (Trifurcacion izq rect der) [] = Trifurcacion izq rect der
+reportarDerrumbe (Trifurcacion izq rect der) str =
+                        if (length str == 1) then
+                            case (head str) of
+                                'i' -> Trifurcacion (Nothing) rect der
+                                'r' -> Trifurcacion izq (Nothing) der
+                                'd' -> Trifurcacion izq rect (Nothing)
+                        else
+                            reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) (init str)) (tail str)
 
 -- Funcion para mostrar las opciones y recibir del user
 mostrarRecibirOpciones :: Laberinto -> IO ()
@@ -64,7 +97,8 @@ mostrarRecibirOpciones laberintoEnMem = do
             1 -> comenzarLaberintoNuevo
             --2 -> do
                     --let puntoActual = 
-            --3 -> 
+            3 -> repParedAbiertaMenu laberintoEnMem
+            4 -> repDerrumbeMenu laberintoEnMem
             _ -> putStrLn "Do somth else"
     mostrarRecibirOpciones laberintoEnMem
 

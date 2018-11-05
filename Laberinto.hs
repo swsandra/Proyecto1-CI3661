@@ -1,7 +1,16 @@
 module Laberinto
 ( Laberinto(..),
   caminoSinSalida,
-  agregarLaberinto) where
+  crearTesoro,
+  agregarLaberinto,
+  leerLaberinto,
+  escribirLaberinto,
+  voltearIzquierda,
+  voltearDerecha,
+  irRecto,
+  recorrerLaberinto
+)
+where
 
 import System.IO
 
@@ -72,19 +81,19 @@ escribirLaberinto path laberinto = writeFile path $ show laberinto
     que comienza al voltear a la izquierda-}
 voltearIzquierda :: Laberinto -> Laberinto
 voltearIzquierda (Trifurcacion (Just(izq)) recto der) = izq
-voltearIzquierda (Trifurcacion _ recto der) = error "No hay camino"
+voltearIzquierda (Trifurcacion _ recto der) = Trifurcacion (Nothing) recto der
 
 {- Función que recibe un laberinto y retorna el laberinto
     que comienza al voltear a la derecha-}
 voltearDerecha :: Laberinto -> Laberinto
 voltearDerecha (Trifurcacion izq recto (Just(der))) = der
-voltearDerecha (Trifurcacion izq recto _) = error "No hay camino"
+voltearDerecha (Trifurcacion izq recto _) = Trifurcacion izq recto (Nothing)
 
 {- Función que recibe un laberinto y retorna el laberinto
     que comienza al seguir recto-}
 irRecto :: Laberinto -> Laberinto
 irRecto (Trifurcacion izq (Just(recto)) der) = recto
-irRecto (Trifurcacion izq _ der) = error "No hay camino"
+irRecto (Trifurcacion izq _ der) = Trifurcacion izq (Nothing) der
 
 {- Función que recibe un laberinto y una ruta y retorna el
     laberinto que comienza en el punto al que conduce esa ruta
@@ -97,6 +106,7 @@ recorrerLaberinto lab (x:xs) | x == 'i' = recorrerLaberinto (voltearIzquierda la
                              | x == 'd' = recorrerLaberinto (voltearDerecha lab) xs
                             -- | otherwise = error "No se ha insertado la ruta correctamente"
                              | otherwise = recorrerLaberinto lab xs
+
 
 --Pruebas con los laberintos de la prueba anterior
 --let lab4 = voltearIzquierda lab1
