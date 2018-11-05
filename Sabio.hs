@@ -47,6 +47,7 @@ construirLaberinto lab str = if ((length str) == 1) then
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
 
+repParedAbiertaMenu :: Laberinto -> IO ()
 repParedAbiertaMenu lab = do
     putStrLn "Introduzca una ruta para abrir la pared, de ser posible"
     instruccionesRuta
@@ -66,24 +67,33 @@ reportarParedAbierta lab str =
                         else
                             reportarParedAbierta (recorrerLaberinto lab ([head str])) (tail str)
 
+repDerrumbeMenu :: Laberinto -> IO ()
 repDerrumbeMenu lab = do
-    putStrLn "Introduzca una ruta para derrumbar una pared, de ser posible"
+    putStrLn "Introduzca una ruta para derrumbar una pared, de ser posible."
     instruccionesRuta
     i <- getLine
-    let laberintoEnMem = reportarDerrumbe lab i
-    putStrLn "Se ha concluido la operación.\n"
-    mostrarRecibirOpciones laberintoEnMem
+    putStrLn "Introduzca la dirección de la pared que desea derrumbar."
+    putStrLn "Los caracteres permitidos sólo pueden ser los indicados anteriormente."
+    m <- getLine
+    if ((length m) > 1 || (m/="d" && m/="i" && m/="d")) then do
+        putStrLn "El caracter introductido no es valido o es una cadena de caracteres."
+        putStrLn "Regresando al menu."
+        mostrarRecibirOpciones lab
+    else do
+        let laberintoEnMem = reportarDerrumbe lab i m
+        putStrLn "Se ha concluido la operación.\n"
+        mostrarRecibirOpciones laberintoEnMem
 
-reportarDerrumbe :: Laberinto -> [Char] -> Laberinto
-reportarDerrumbe (Trifurcacion izq rect der) [] = Trifurcacion izq rect der
-reportarDerrumbe (Trifurcacion izq rect der) str =
-                        if (length str == 1) then
-                            case (head str) of
-                                'i' -> Trifurcacion (Nothing) rect der
-                                'r' -> Trifurcacion izq (Nothing) der
-                                'd' -> Trifurcacion izq rect (Nothing)
-                        else
-                            reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) (init str)) (tail str)
+reportarDerrumbe :: Laberinto -> [Char] -> [Char] -> Laberinto
+reportarDerrumbe (Trifurcacion izq rect der) [] [] = Trifurcacion izq rect der
+reportarDerrumbe (Trifurcacion izq rect der) str [] = Trifurcacion izq rect der
+reportarDerrumbe (Trifurcacion izq rect der) [] char = 
+        case (head char) of
+            'i' -> Trifurcacion (Nothing) rect der
+            'r' -> Trifurcacion izq (Nothing) der
+            'd' -> Trifurcacion izq rect (Nothing)
+reportarDerrumbe (Trifurcacion izq rect der) str char=
+        reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
 
 -- Funcion para mostrar las opciones y recibir del user
 mostrarRecibirOpciones :: Laberinto -> IO ()
