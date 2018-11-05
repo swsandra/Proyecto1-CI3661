@@ -34,7 +34,8 @@ agregarLaberinto :: Laberinto -> Laberinto -> Char -> Laberinto
 agregarLaberinto (Trifurcacion izq recto der) lab 'd' = Trifurcacion izq recto (Just lab)
 agregarLaberinto (Trifurcacion izq recto der) lab 'i' = Trifurcacion (Just lab) recto der
 agregarLaberinto (Trifurcacion izq recto der) lab 'r' = Trifurcacion izq (Just lab) der
-agregarLaberinto (Trifurcacion izq recto der) lab _ = error "Se debe especificar dirección del camino ('d', 'i' o 'r')"
+--agregarLaberinto (Trifurcacion izq recto der) lab _ = error "Se debe especificar dirección del camino ('d', 'i' o 'r')"
+agregarLaberinto (Trifurcacion izq recto der) lab _ = lab
 
 --Funcion para leer un laberinto de un archivo de texto
 --leerLaberinto :: FilePath -> Laberinto --Esto retorna IO Laberinto, puedes pegarlo directamente en la opcion
@@ -94,7 +95,8 @@ recorrerLaberinto lab [] = lab
 recorrerLaberinto lab (x:xs) | x == 'i' = recorrerLaberinto (voltearIzquierda lab) xs
                              | x == 'r' = recorrerLaberinto (irRecto lab) xs
                              | x == 'd' = recorrerLaberinto (voltearDerecha lab) xs
-                             | otherwise = error "No se ha insertado la ruta correctamente"
+                            -- | otherwise = error "No se ha insertado la ruta correctamente"
+                             | otherwise = recorrerLaberinto lab xs
 
 --Pruebas con los laberintos de la prueba anterior
 --let lab4 = voltearIzquierda lab1

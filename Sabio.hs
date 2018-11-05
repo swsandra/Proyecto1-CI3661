@@ -4,10 +4,6 @@ import Data.Char (digitToInt, isDigit)
 import Data.Typeable
 import System.IO
 
--- Crear laberinto vacio en memoria
-laberintoEnMem :: Laberinto
-laberintoEnMem = caminoSinSalida
-
 -- Definicion opciones de menu
 opcionesDisponibles :: [(String, String)]
 opcionesDisponibles = [
@@ -32,18 +28,19 @@ instruccionesRuta = do
     putStrLn "  d : girar a la derecha"
     putStrLn "  i : girar a la izquierda"
     putStrLn "  r : seguir recto"
-    putStrLn "De introducir un caracter invalido se mostrará un mensaje de error"
+    putStrLn "De introducir un caracter invalido se ignorará el mismo"
     putStrLn "Ejemplo de la ruta derecha-recto-izquierda-derecha: drid"
 
-comenzarLaberintoNuevo :: IO Laberinto
+comenzarLaberintoNuevo :: IO ()
 comenzarLaberintoNuevo = do
-    let laberintoEnMem = caminoSinSalida
     putStrLn "Se ha borrado el laberinto en Memoria."
     putStrLn "Indique una ruta para poblar el laberinto."
     instruccionesRuta
     i <- getLine
-    let laberintoEnMem = construirLaberinto laberintoEnMem i
-    return laberintoEnMem
+    let laberintoEnMem = construirLaberinto caminoSinSalida i
+    putStrLn "Se ha cargado el laberinto. \n"
+    mostrarRecibirOpciones laberintoEnMem
+    
 
 construirLaberinto :: Laberinto -> [Char] -> Laberinto
 construirLaberinto lab str = if ((length str) == 1) then
@@ -51,25 +48,28 @@ construirLaberinto lab str = if ((length str) == 1) then
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
 
+-- buscarAbrirPared lab str = if ((length str) != 0) then
+--                                 if 
+
+
 -- Funcion para mostrar las opciones y recibir del user
-mostrarRecibirOpciones :: IO ()
-mostrarRecibirOpciones = do
+mostrarRecibirOpciones :: Laberinto -> IO ()
+mostrarRecibirOpciones laberintoEnMem = do
     printMenu
     i:_ <- getLine
     if not ((isDigit i) && ((digitToInt i) `elem` [1..8])) then do
         putStrLn "La opción escogida incorrecta. Introduce una opción válida, viajero. \n"
     else
         case (digitToInt i) of 
-            1 -> do
-                    let laberintoEnMem = comenzarLaberintoNuevo
-                    putStrLn ""
+            1 -> comenzarLaberintoNuevo
             --2 -> do
                     --let puntoActual = 
+            --3 -> 
             _ -> putStrLn "Do somth else"
-    mostrarRecibirOpciones
+    mostrarRecibirOpciones laberintoEnMem
 
 main :: IO ()
 main = do
     putStrLn "¡Bienvenido, aventurero!"
     putStrLn "Soy el sabio del laberinto. Adelante, escoge una opción"
-    mostrarRecibirOpciones
+    mostrarRecibirOpciones caminoSinSalida
