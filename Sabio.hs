@@ -95,6 +95,20 @@ reportarDerrumbe (Trifurcacion izq rect der) [] char =
 reportarDerrumbe (Trifurcacion izq rect der) str char=
         reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
 
+escribirEnArchivo lab = do
+    putStrLn "Introduzca el path del archivo donde escribir el laberinto actual"
+    i <- getLine
+    escribirLaberinto i lab
+    putStrLn "Se ha exportado el laberinto."
+    mostrarRecibirOpciones lab
+
+cargarLaberinto lab = do
+    putStrLn "Indique el path del archivo que contiene el laberinto."
+    i <- getLine
+    --let laberintoEnMem = leerLaberinto i
+    putStrLn "Se ha importado el laberinto al sistema."
+    --mostrarRecibirOpciones laberintoEnMem
+
 -- Funcion para mostrar las opciones y recibir del user
 mostrarRecibirOpciones :: Laberinto -> IO ()
 mostrarRecibirOpciones laberintoEnMem = do
@@ -109,7 +123,10 @@ mostrarRecibirOpciones laberintoEnMem = do
                     --let puntoActual = 
             3 -> repParedAbiertaMenu laberintoEnMem
             4 -> repDerrumbeMenu laberintoEnMem
-            _ -> putStrLn "Do somth else"
+            --5 -> tesorotomado
+            --6 -> tesorohallado
+            7 -> escribirEnArchivo laberintoEnMem
+            --8 -> cargarLaberinto
     mostrarRecibirOpciones laberintoEnMem
 
 main :: IO ()

@@ -1,0 +1,1 @@
+Trifurcacion Nothing Nothing (Just (Trifurcacion Nothing (Just (Trifurcacion Nothing (Just (Trifurcacion Nothing Nothing Nothing)) Nothing)) Nothing))
