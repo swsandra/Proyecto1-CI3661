@@ -3,12 +3,16 @@ module Laberinto
   caminoSinSalida,
   crearTesoro,
   agregarLaberinto,
-  leerLaberinto,
-  escribirLaberinto,
   voltearIzquierda,
   voltearDerecha,
   irRecto,
-  recorrerLaberinto
+  recorrerLaberinto,
+  construirLaberinto,
+  evaluarLaberinto,
+  reportarParedAbierta,
+  reportarDerrumbe,
+  leerLaberinto,
+  escribirLaberinto
 )
 where
 
@@ -45,21 +49,9 @@ agregarLaberinto (Trifurcacion izq recto der) lab 'i' = Trifurcacion (Just lab) 
 agregarLaberinto (Trifurcacion izq recto der) lab 'r' = Trifurcacion izq (Just lab) der
 --agregarLaberinto (Trifurcacion izq recto der) lab _ = error "Se debe especificar dirección del camino ('d', 'i' o 'r')"
 agregarLaberinto (Trifurcacion izq recto der) lab _ = lab
+agregarLaberinto (Tesoro str recto) lab 'r' = Tesoro str (Just lab)
+agregarLaberinto (Tesoro str recto) lab _ = lab
 
---Funcion para leer un laberinto de un archivo de texto
---leerLaberinto :: FilePath -> Laberinto --Esto retorna IO Laberinto, puedes pegarlo directamente en la opcion
---para  evitar el problema
-leerLaberinto path = do
-    archivo <- openFile path ReadMode
-    contents <- hGetContents archivo
-    return (read contents :: Laberinto) --Comenta esto y descomenta el de abajo cuando vayas a usarlo
-{-    let x = read contents in 
-        do
-            FUNCION QUE CARGA EL LABERINTO, ESTA EN X (para Elvin era cliente [] x, x es el laberinto)
-            hClose archivo-}
-
-escribirLaberinto :: FilePath -> Laberinto -> IO()
-escribirLaberinto path laberinto = writeFile path $ show laberinto
 
 
 --Prueba caminoSinSalida
@@ -82,18 +74,22 @@ escribirLaberinto path laberinto = writeFile path $ show laberinto
 voltearIzquierda :: Laberinto -> Laberinto
 voltearIzquierda (Trifurcacion (Just(izq)) recto der) = izq
 voltearIzquierda (Trifurcacion _ recto der) = Trifurcacion (Nothing) recto der
+voltearIzquierda (Tesoro str lab) = Tesoro str lab
 
 {- Función que recibe un laberinto y retorna el laberinto
     que comienza al voltear a la derecha-}
 voltearDerecha :: Laberinto -> Laberinto
 voltearDerecha (Trifurcacion izq recto (Just(der))) = der
 voltearDerecha (Trifurcacion izq recto _) = Trifurcacion izq recto (Nothing)
+voltearDerecha (Tesoro str lab) = Tesoro str lab
 
 {- Función que recibe un laberinto y retorna el laberinto
     que comienza al seguir recto-}
 irRecto :: Laberinto -> Laberinto
 irRecto (Trifurcacion izq (Just(recto)) der) = recto
 irRecto (Trifurcacion izq _ der) = Trifurcacion izq (Nothing) der
+irRecto (Tesoro str (Just(recto))) = recto
+irRecto (Tesoro str _) = Tesoro str Nothing
 
 {- Función que recibe un laberinto y una ruta y retorna el
     laberinto que comienza en el punto al que conduce esa ruta
@@ -107,6 +103,59 @@ recorrerLaberinto lab (x:xs) | x == 'i' = recorrerLaberinto (voltearIzquierda la
                             -- | otherwise = error "No se ha insertado la ruta correctamente"
                              | otherwise = recorrerLaberinto lab xs
 
+
+
+
+{- Funciones auxiliares-}
+
+construirLaberinto :: Laberinto -> [Char] -> Laberinto
+construirLaberinto lab str = if ((length str) == 1) then
+                                agregarLaberinto (caminoSinSalida) lab (head str)
+                             else
+                                agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
+
+evaluarLaberinto (Trifurcacion Nothing Nothing Nothing) = 'S'
+evaluarLaberinto (Trifurcacion izq recto der) = 'T'
+evaluarLaberinto (Tesoro str recto) = 'E'
+
+getTesoroStr (Tesoro str recto) = str
+
+reportarParedAbierta :: Laberinto -> [Char] -> Laberinto
+reportarParedAbierta lab [] = lab
+reportarParedAbierta lab str =
+                        if (recorrerLaberinto lab ([head str]) == lab) then
+                            if ((length str) == 1) then
+                                agregarLaberinto (lab) caminoSinSalida (head str)
+                            else
+                                agregarLaberinto (lab) (construirLaberinto caminoSinSalida (tail str)) (head str)
+                        else
+                            reportarParedAbierta (recorrerLaberinto lab ([head str])) (tail str)
+
+reportarDerrumbe :: Laberinto -> [Char] -> [Char] -> Laberinto
+reportarDerrumbe (Trifurcacion izq rect der) [] [] = Trifurcacion izq rect der
+reportarDerrumbe (Trifurcacion izq rect der) str [] = Trifurcacion izq rect der
+reportarDerrumbe (Trifurcacion izq rect der) [] char = 
+        case (head char) of
+            'i' -> Trifurcacion (Nothing) rect der
+            'r' -> Trifurcacion izq (Nothing) der
+            'd' -> Trifurcacion izq rect (Nothing)
+reportarDerrumbe (Trifurcacion izq rect der) str char=
+        reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
+
+--Funcion para leer un laberinto de un archivo de texto
+--leerLaberinto :: FilePath -> Laberinto --Esto retorna IO Laberinto, puedes pegarlo directamente en la opcion
+--para  evitar el problema
+leerLaberinto path = do
+    archivo <- openFile path ReadMode
+    contents <- hGetContents archivo
+    return (read contents :: Laberinto) --Comenta esto y descomenta el de abajo cuando vayas a usarlo
+{-    let x = read contents in 
+        do
+            FUNCION QUE CARGA EL LABERINTO, ESTA EN X (para Elvin era cliente [] x, x es el laberinto)
+            hClose archivo-}
+
+escribirLaberinto :: FilePath -> Laberinto -> IO()
+escribirLaberinto path laberinto = writeFile path $ show laberinto
 
 --Pruebas con los laberintos de la prueba anterior
 --let lab4 = voltearIzquierda lab1

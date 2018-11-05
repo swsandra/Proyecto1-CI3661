@@ -41,11 +41,31 @@ comenzarLaberintoNuevo = do
     putStrLn "Se ha cargado el laberinto. \n"
     mostrarRecibirOpciones laberintoEnMem
 
-construirLaberinto :: Laberinto -> [Char] -> Laberinto
-construirLaberinto lab str = if ((length str) == 1) then
-                                agregarLaberinto (caminoSinSalida) lab (head str)
-                             else
-                                agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
+preguntarRuta :: Laberinto -> IO ()
+preguntarRuta lab = do
+    putStrLn "Introduzca la ruta a seguir en el laberinto."
+    instruccionesRuta
+    i <- getLine
+    let laberintoEnMem = recorrerLaberinto lab i
+    if (evaluarLaberinto laberintoEnMem == 'S') then do
+        putStrLn "Se ha llegado a un camino sin salida."
+        putStrLn "GAME OVER."
+    else if (evaluarLaberinto laberintoEnMem == 'E') then do
+        putStrLn "¡Has encontrado un TESORO!"
+        putStrLn "FIN"
+    else do
+        putStrLn "No ha llegado a nada. Puede continuar o empezar desde el inicio."
+        putStrLn "1.- Continuar"
+        putStrLn "2.- Volver al inicio"
+        i:_ <- getLine
+        if not ((isDigit i) && ((digitToInt i) `elem` [1..2])) then do
+            putStrLn "La opción escogida es incorrecta."
+            putStrLn "Por errores del viajero, se llevara al principio del programa. \n"
+            mostrarRecibirOpciones lab
+        else
+            case (digitToInt i) of
+                1 -> preguntarRuta laberintoEnMem
+                2 -> preguntarRuta lab
 
 repParedAbiertaMenu :: Laberinto -> IO ()
 repParedAbiertaMenu lab = do
@@ -55,17 +75,6 @@ repParedAbiertaMenu lab = do
     let laberintoEnMem = reportarParedAbierta lab i
     putStrLn "Se ha concluido la operación.\n"
     mostrarRecibirOpciones laberintoEnMem
-
-reportarParedAbierta :: Laberinto -> [Char] -> Laberinto
-reportarParedAbierta lab [] = lab
-reportarParedAbierta lab str =
-                        if (recorrerLaberinto lab ([head str]) == lab) then
-                            if ((length str) == 1) then
-                                agregarLaberinto (lab) caminoSinSalida (head str)
-                            else
-                                agregarLaberinto (lab) (construirLaberinto caminoSinSalida (tail str)) (head str)
-                        else
-                            reportarParedAbierta (recorrerLaberinto lab ([head str])) (tail str)
 
 repDerrumbeMenu :: Laberinto -> IO ()
 repDerrumbeMenu lab = do
@@ -84,17 +93,7 @@ repDerrumbeMenu lab = do
         putStrLn "Se ha concluido la operación.\n"
         mostrarRecibirOpciones laberintoEnMem
 
-reportarDerrumbe :: Laberinto -> [Char] -> [Char] -> Laberinto
-reportarDerrumbe (Trifurcacion izq rect der) [] [] = Trifurcacion izq rect der
-reportarDerrumbe (Trifurcacion izq rect der) str [] = Trifurcacion izq rect der
-reportarDerrumbe (Trifurcacion izq rect der) [] char = 
-        case (head char) of
-            'i' -> Trifurcacion (Nothing) rect der
-            'r' -> Trifurcacion izq (Nothing) der
-            'd' -> Trifurcacion izq rect (Nothing)
-reportarDerrumbe (Trifurcacion izq rect der) str char=
-        reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
-
+escribirEnArchivo :: Laberinto -> IO ()
 escribirEnArchivo lab = do
     putStrLn "Introduzca el path del archivo donde escribir el laberinto actual"
     i <- getLine
@@ -119,8 +118,7 @@ mostrarRecibirOpciones laberintoEnMem = do
     else
         case (digitToInt i) of 
             1 -> comenzarLaberintoNuevo
-            --2 -> do
-                    --let puntoActual = 
+            2 -> preguntarRuta laberintoEnMem
             3 -> repParedAbiertaMenu laberintoEnMem
             4 -> repDerrumbeMenu laberintoEnMem
             --5 -> tesorotomado
