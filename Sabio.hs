@@ -124,7 +124,7 @@ mostrarRecibirOpciones laberintoEnMem = do
             --5 -> tesorotomado
             --6 -> tesorohallado
             7 -> escribirEnArchivo laberintoEnMem
-            --8 -> cargarLaberinto
+            --8 -> cargarLaberinto      DESCOMENTA ESTO!!!
     mostrarRecibirOpciones laberintoEnMem
 
 main :: IO ()

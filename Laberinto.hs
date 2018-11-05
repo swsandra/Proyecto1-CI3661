@@ -9,6 +9,7 @@ module Laberinto
   recorrerLaberinto,
   construirLaberinto,
   evaluarLaberinto,
+  getTesoroStr,
   reportarParedAbierta,
   reportarDerrumbe,
   leerLaberinto,
@@ -114,10 +115,12 @@ construirLaberinto lab str = if ((length str) == 1) then
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
 
+evaluarLaberinto :: Laberinto -> Char
 evaluarLaberinto (Trifurcacion Nothing Nothing Nothing) = 'S'
 evaluarLaberinto (Trifurcacion izq recto der) = 'T'
 evaluarLaberinto (Tesoro str recto) = 'E'
 
+getTesoroStr :: Laberinto -> String
 getTesoroStr (Tesoro str recto) = str
 
 reportarParedAbierta :: Laberinto -> [Char] -> Laberinto
