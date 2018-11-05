@@ -19,31 +19,39 @@ where
 
 import System.IO
 
-{- Tipo de Datos: Laberinto 
-                    Trifurcacion: izquierda, recto, derecho -}
-data Laberinto = Trifurcacion (Maybe (Laberinto)) (Maybe (Laberinto)) (Maybe (Laberinto))
-                | Tesoro String (Maybe (Laberinto))
-                deriving (Show, Read, Eq)
+-- | Tipo de datos Laberinto.
+data Laberinto 
+    -- | Constructor de una trifurcación de un laberinto en maybe laberintos
+    -- con caminos en el orden izquierda, recto y derecha.
+    = Trifurcacion (Maybe (Laberinto)) (Maybe (Laberinto)) (Maybe (Laberinto))
+    -- | Constructor de un tesoro en el camino de un laberinto.
+    | Tesoro String (Maybe (Laberinto))
+    deriving (Show, Read, Eq)
 
-{-Instancias de Show y Read-}
+{-Funciones de Construcción de laberintos-}
 
-
-{-Funciones de Construcción-}
-
-{- Función que retorna un camino sin salida (Trifurcacion
-    donde todos los caminos conducen a Nothing)-}
+{- |
+    Función que retorna un camino sin salida, es decir una Trifurcacion
+    donde todos los caminos conducen a Nothing.
+-}
 caminoSinSalida :: Laberinto
 caminoSinSalida = Trifurcacion (Nothing) (Nothing) (Nothing)
 
-{- Función que recibe un String con la descripción de un tesoro y
-    un laberinto y retorna un Tesoro-}
+{- |
+    Función que recibe un String con la descripción de un Tesoro y
+    un Laberinto y retorna un Tesoro.
+-}
 crearTesoro :: [Char] -> Laberinto -> Laberinto
 crearTesoro s a = Tesoro s (Just a)
 
-{- Función que recibe una Trifurcacion, un laberinto y
-    un indicador de cual camino los relaciona y retorna 
-    una Trifurcacion en que se indique que dicho camino
-    conduce a dicho laberinto-}
+{- |
+    Función que recibe una Trifurcacion, un Laberinto y un indicador de 
+    cual camino los relaciona y retorna una Trifurcacion en la que se indica 
+    que dicho camino especificado en el indicador conduce al Laberinto dado 
+    como parámetro.
+    El indicador viene dado por un char i, r o d que indica si se agrega el
+    Laberinto a la izquierda, recto o a la derecha respectivamente.
+-}
 agregarLaberinto :: Laberinto -> Laberinto -> Char -> Laberinto
 agregarLaberinto (Trifurcacion izq recto der) lab 'd' = Trifurcacion izq recto (Just lab)
 agregarLaberinto (Trifurcacion izq recto der) lab 'i' = Trifurcacion (Just lab) recto der
@@ -54,48 +62,43 @@ agregarLaberinto (Tesoro str recto) lab 'r' = Tesoro str (Just lab)
 agregarLaberinto (Tesoro str recto) lab _ = lab
 
 
-
---Prueba caminoSinSalida
---let lab1 = Trifurcacion (Just (Trifurcacion Nothing Nothing (Just (caminoSinSalida)))) (Just (caminoSinSalida)) (Just (Trifurcacion Nothing Nothing (Just (caminoSinSalida))))
---Prueba crearTesoro
---let lab2 = Trifurcacion (Just (Trifurcacion Nothing Nothing (Just (caminoSinSalida)))) (Just (crearTesoro "Tesoro1" caminoSinSalida)) (Just (crearTesoro "Tesoro2" caminoSinSalida))
---Prueba agregarLaberinto
---let lab3 = caminoSinSalida
---Agregar los lab1 y lab2
---let lab4 = agregarLaberinto lab3 lab1 'd' ESTO DA ALGO LARGUISIMO
---Pruebas de agregarLaberinto con caminos sin salida
---let lab4 = agregarLaberinto lab3 caminoSinSalida 'd'
---Pruebalo con el primer parametro como un laberinto mas complejo (que si Trifurcacion Nothing Nothing (Just(caminoSinSalida)))
---OJO no hagas algo como let labx = agregarLaberinto labx lab1 'd' porque no hace nada
-
 {-Funciones de Acceso-}
 
-{- Función que recibe un laberinto y retorna el laberinto
-    que comienza al voltear a la izquierda-}
+{- |
+    Función que recibe un Laberinto y retorna el Laberinto
+    que comienza al voltear al camino de la izquierda.
+-}
 voltearIzquierda :: Laberinto -> Laberinto
 voltearIzquierda (Trifurcacion (Just(izq)) recto der) = izq
 voltearIzquierda (Trifurcacion _ recto der) = Trifurcacion (Nothing) recto der
 voltearIzquierda (Tesoro str lab) = Tesoro str lab
 
-{- Función que recibe un laberinto y retorna el laberinto
-    que comienza al voltear a la derecha-}
+{- |
+    Función que recibe un Laberinto y retorna el Laberinto
+    que comienza al voltear al camino de la derecha.
+-}
 voltearDerecha :: Laberinto -> Laberinto
 voltearDerecha (Trifurcacion izq recto (Just(der))) = der
 voltearDerecha (Trifurcacion izq recto _) = Trifurcacion izq recto (Nothing)
 voltearDerecha (Tesoro str lab) = Tesoro str lab
 
-{- Función que recibe un laberinto y retorna el laberinto
-    que comienza al seguir recto-}
+{- |
+    Función que recibe un Laberinto y retorna el Laberinto
+    que comienza al seguir por el camino recto.
+-}
 irRecto :: Laberinto -> Laberinto
 irRecto (Trifurcacion izq (Just(recto)) der) = recto
 irRecto (Trifurcacion izq _ der) = Trifurcacion izq (Nothing) der
 irRecto (Tesoro str (Just(recto))) = recto
 irRecto (Tesoro str _) = Tesoro str Nothing
 
-{- Función que recibe un laberinto y una ruta y retorna el
-    laberinto que comienza en el punto al que conduce esa ruta
-    La ruta es un string con d,i o r si es derecha, izquierda
-    o recto respectivamente (e.g dirrdii)-}
+{- | 
+    Función que recibe un Laberinto y String que contiene una ruta
+    y retorna el Laberinto que comienza en el punto al que conduce 
+    esa ruta. La ruta se especifica con indicadores que vienen dados
+    por char i, r o d si es izquierda, recto o derecha respectivamente
+    (por ejemplo 'dird' representa el camino derecha-izquierda-recto-derecha).
+-}
 recorrerLaberinto :: Laberinto -> [Char] -> Laberinto
 recorrerLaberinto lab [] = lab
 recorrerLaberinto lab (x:xs) | x == 'i' = recorrerLaberinto (voltearIzquierda lab) xs
@@ -234,5 +237,6 @@ let lab6 = Trifurcacion Nothing Nothing (Just(Trifurcacion (Just(Trifurcacion (J
                         Nothing 
                         Nothing))))))
 -}
+
 
 
