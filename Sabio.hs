@@ -82,8 +82,10 @@ preguntarRuta lab = do
             case (digitToInt i) of
                 1 -> preguntarRuta laberintoEnMem
                 2 -> preguntarRuta lab
-{- |
-    
+{- | 
+    Función que imprime las instrucciones para reportar una pared abierta.
+    Recibe el laberinto en memoria, y con la ruta que pide al usuario
+    se llama a la función correspondiente.
 -}
 repParedAbiertaMenu :: Laberinto -- ^ 
                     -> IO () -- ^ Valor de retorno: IO.
@@ -96,7 +98,9 @@ repParedAbiertaMenu lab = do
     mostrarRecibirOpciones laberintoEnMem
 
 {- |
-    
+    Función que imprime las instrucciones para reportar una pared abierta.
+    Recibe el laberinto en memoria, y con una ruta y dirección que pide al
+    usuario se llama a la función correspondiente.
 -}
 repDerrumbeMenu :: Laberinto -- ^ .
                 -> IO () -- ^ Valor de retorno: IO.

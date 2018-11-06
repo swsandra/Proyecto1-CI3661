@@ -134,9 +134,11 @@ getTesoroStr :: Laberinto -- ^ Tesoro del cual se desea saber la descripción.
              -> String -- ^ Valor de retorno: String que contiene la descripción del Tesoro.
 getTesoroStr (Tesoro str recto) = str
 
--- Funcion que recibe un laberinto y un string, y recorre el laberinto hasta acabar el string
+-- 
 {- |
-    
+    Funcion que recibe un laberinto y un string, y recorre el laberinto hasta acabar el string
+    o hasta llegar a una pared, donde construye el laberinto con el resto del string y lo agrega
+    en la direccion correspondiente a la cabeza del string restante. Más detalles en README.txt.
 -}
 reportarParedAbierta :: Laberinto -- ^
                      -> [Char] -- ^
@@ -152,7 +154,9 @@ reportarParedAbierta lab str =
                             reportarParedAbierta (recorrerLaberinto lab ([head str])) (tail str)
 
 {- |
-    
+    Funcion que recibe un laberinto y dos string, y recorre el laberinto hasta acabar el string
+    donde toma la cabeza del segundo string (un char) para reemplazar el laberinto en esa direccion
+    por Nothing. Más detalles en README.txt.
 -}
 reportarDerrumbe :: Laberinto -- ^
                  -> [Char] -- ^
