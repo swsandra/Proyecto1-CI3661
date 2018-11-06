@@ -106,20 +106,25 @@ recorrerLaberinto lab (x:xs) | x == 'i' = recorrerLaberinto (voltearIzquierda la
 
 {- Funciones auxiliares-}
 
+-- Funcion que a partir de una ruta dada y un laberinto, construye otro laberinto y lo agrega en la direccion
+-- de la primera letra del string. 
 construirLaberinto :: Laberinto -> [Char] -> Laberinto
 construirLaberinto lab str = if ((length str) == 1) then
                                 agregarLaberinto (caminoSinSalida) lab (head str)
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
 
+-- Funcion que dado un laberinto evalua si es una trifurcacion normal, un camino sin salida o una habitacion con tesoro 
 evaluarLaberinto :: Laberinto -> Char
 evaluarLaberinto (Trifurcacion Nothing Nothing Nothing) = 'S'
 evaluarLaberinto (Trifurcacion izq recto der) = 'T'
 evaluarLaberinto (Tesoro str recto) = 'E'
 
+--Funcion que retorna el string de un tesoro
 getTesoroStr :: Laberinto -> String
 getTesoroStr (Tesoro str recto) = str
 
+-- Funcion que recibe un laberinto y un string, y recorre el laberinto hasta acabar el string
 reportarParedAbierta :: Laberinto -> [Char] -> Laberinto
 reportarParedAbierta lab [] = lab
 reportarParedAbierta lab str =
