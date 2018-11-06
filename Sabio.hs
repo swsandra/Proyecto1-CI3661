@@ -138,7 +138,14 @@ mostrarRecibirOpciones laberintoEnMem = do
             --5 -> tesorotomado
             --6 -> tesorohallado
             7 -> escribirEnArchivo laberintoEnMem
-            --8 -> cargarLaberinto      DESCOMENTA ESTO!!!
+            8 -> do
+                putStrLn "Indique el path del archivo que contiene el laberinto."
+                i <- getLine
+                x <- readFile i
+                let lab = read x :: Laberinto
+                putStrLn "Se ha importado el laberinto al sistema."
+                putStrLn $ show lab
+                mostrarRecibirOpciones lab
     mostrarRecibirOpciones laberintoEnMem
 
 -- | Main

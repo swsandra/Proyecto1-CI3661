@@ -12,7 +12,6 @@ module Laberinto
   getTesoroStr,
   reportarParedAbierta,
   reportarDerrumbe,
-  leerLaberinto,
   escribirLaberinto
 )
 where
@@ -148,95 +147,5 @@ reportarDerrumbe (Trifurcacion izq rect der) [] char =
 reportarDerrumbe (Trifurcacion izq rect der) str char=
         reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
 
---Funcion para leer un laberinto de un archivo de texto
---leerLaberinto :: FilePath -> Laberinto --Esto retorna IO Laberinto, puedes pegarlo directamente en la opcion
---para  evitar el problema
-leerLaberinto path = do
-    archivo <- openFile path ReadMode
-    contents <- hGetContents archivo
-    return (read contents :: Laberinto) --Comenta esto y descomenta el de abajo cuando vayas a usarlo
-{-    let x = read contents in 
-        do
-            FUNCION QUE CARGA EL LABERINTO, ESTA EN X (para Elvin era cliente [] x, x es el laberinto)
-            hClose archivo-}
-
 escribirLaberinto :: FilePath -> Laberinto -> IO()
 escribirLaberinto path laberinto = writeFile path $ show laberinto
-
---Pruebas con los laberintos de la prueba anterior
---let lab4 = voltearIzquierda lab1
---En lo anterior solo cambio los laberintos y veo si está bien
---Para recorrer laberinto, usaré esta instancia fea
---let lab5 = agregarLaberinto lab2 lab1 'i'
---Para este ejemplo puedes ver mas fácil cómo lo recorre aquí
-{- Trifurcacion 
-    (Just (Trifurcacion 
-            (Just (Trifurcacion 
-                    Nothing 
-                    Nothing 
-                    (Just (Trifurcacion 
-                            Nothing 
-                            Nothing 
-                            Nothing)))) 
-            (Just (Trifurcacion 
-                    Nothing 
-                    Nothing 
-                    Nothing)) 
-            (Just (Trifurcacion 
-                    Nothing 
-                    Nothing 
-                    (Just (Trifurcacion 
-                            Nothing 
-                            Nothing 
-                            Nothing))))))
-     (Just (Tesoro "Tesoro1" 
-            (Just (Trifurcacion 
-                    Nothing 
-                    Nothing 
-                    Nothing)))) 
-     (Just (Tesoro "Tesoro2" 
-            (Just (Trifurcacion 
-                    Nothing 
-                    Nothing 
-                    Nothing))))
-
-Otro ejemplo con mas anidacion (Just(caminoSinSalida))
-let lab6 = Trifurcacion Nothing Nothing (Just(Trifurcacion (Just(Trifurcacion (Just(Trifurcacion (Just(caminoSinSalida)) Nothing (Just(Trifurcacion (Just(caminoSinSalida)) Nothing (Just(caminoSinSalida)))))) Nothing Nothing)) Nothing (Just(Trifurcacion (Just(caminoSinSalida)) Nothing (Just(caminoSinSalida))))))
- Trifurcacion 
-    Nothing 
-    Nothing 
-    (Just (Trifurcacion 
-        (Just (Trifurcacion 
-            (Just (Trifurcacion 
-                (Just (Trifurcacion 
-                        Nothing 
-                        Nothing 
-                        Nothing)) 
-                Nothing 
-                (Just (Trifurcacion 
-                    (Just (Trifurcacion 
-                            Nothing 
-                            Nothing 
-                            Nothing)) 
-                    Nothing
-                    (Just (Trifurcacion 
-                            Nothing 
-                            Nothing 
-                            Nothing)))))) 
-            Nothing 
-            Nothing)) 
-        Nothing 
-        (Just (Trifurcacion 
-                (Just (Trifurcacion 
-                        Nothing 
-                        Nothing 
-                        Nothing)) 
-                Nothing 
-                (Just (Trifurcacion 
-                        Nothing 
-                        Nothing 
-                        Nothing))))))
--}
-
-
-
