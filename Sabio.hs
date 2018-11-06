@@ -13,11 +13,11 @@ import Data.Typeable
 import System.IO
 
 -- | Función que crea una instancia de un Laberinto vacío en memoria.
-laberintoEnMem :: Laberinto
+laberintoEnMem :: Laberinto -- ^ Valor de retorno: Laberinto vacío.
 laberintoEnMem = caminoSinSalida
 
 -- | Función que define las opciones del menú.
-opcionesDisponibles :: [(String, String)]
+opcionesDisponibles :: [(String, String)] -- ^ Valor de retorno: Diccionario de número de opción y descripción de la opción.
 opcionesDisponibles = [
     ("1", "Comenzar a hablar de un laberinto nuevo"),
     ("2", "Pregunar ruta"),
@@ -30,11 +30,11 @@ opcionesDisponibles = [
     ]
 
 -- | Función para mostrar el menú en pantalla.
-printMenu :: IO ()
+printMenu :: IO () -- ^ Valor de retorno: IO.
 printMenu = putStr $ foldl (\r (x,y) -> r ++ " " ++ x++ ".- " ++ y ++ "\n") "" opcionesDisponibles
 
 -- | Función para mostrar en pantalla las instrucciones de cómo recibir una ruta para un Laberinto.
-instruccionesRuta :: IO()
+instruccionesRuta :: IO() -- ^ Valor de retorno: IO.
 instruccionesRuta = do
     putStrLn "Para indicar una ruta, introduzca una cadena de caracteres."
     putStrLn "Dichos caracteres sólo pueden ser:"    
@@ -45,7 +45,7 @@ instruccionesRuta = do
     putStrLn "Ejemplo de la ruta derecha-recto-izquierda-derecha: drid"
 
 -- | Función para construir un nuevo Laberinto a partir de una ruta dada por el usuario.
-comenzarLaberintoNuevo :: IO()
+comenzarLaberintoNuevo :: IO() -- ^ Valor de retorno: IO.
 comenzarLaberintoNuevo = do
     putStrLn "Se ha borrado el laberinto en Memoria."
     putStrLn "Indique una ruta para poblar el laberinto."
@@ -55,7 +55,9 @@ comenzarLaberintoNuevo = do
     putStrLn "Se ha cargado el laberinto. \n"
     mostrarRecibirOpciones laberintoEnMem
 
-preguntarRuta :: Laberinto -> IO ()
+-- | Función que pregunta la ruta a recorrer en un Laberinto dado.
+preguntarRuta :: Laberinto -- ^ Laberinto que se quiere recorrer.
+              -> IO () -- ^ Valor de retorno: IO.
 preguntarRuta lab = do
     putStrLn "Introduzca la ruta a seguir en el laberinto."
     instruccionesRuta
@@ -80,8 +82,11 @@ preguntarRuta lab = do
             case (digitToInt i) of
                 1 -> preguntarRuta laberintoEnMem
                 2 -> preguntarRuta lab
-
-repParedAbiertaMenu :: Laberinto -> IO ()
+{- |
+    
+-}
+repParedAbiertaMenu :: Laberinto -- ^ 
+                    -> IO () -- ^ Valor de retorno: IO.
 repParedAbiertaMenu lab = do
     putStrLn "Introduzca una ruta para abrir la pared, de ser posible"
     instruccionesRuta
@@ -90,7 +95,11 @@ repParedAbiertaMenu lab = do
     putStrLn "Se ha concluido la operación.\n"
     mostrarRecibirOpciones laberintoEnMem
 
-repDerrumbeMenu :: Laberinto -> IO ()
+{- |
+    
+-}
+repDerrumbeMenu :: Laberinto -- ^ .
+                -> IO () -- ^ Valor de retorno: IO.
 repDerrumbeMenu lab = do
     putStrLn "Introduzca una ruta para derrumbar una pared, de ser posible."
     instruccionesRuta
@@ -107,7 +116,10 @@ repDerrumbeMenu lab = do
         putStrLn "Se ha concluido la operación.\n"
         mostrarRecibirOpciones laberintoEnMem
 
-escribirEnArchivo :: Laberinto -> IO ()
+
+-- | Función que escribe un Laberinto en un archivo.
+escribirEnArchivo :: Laberinto -- ^ Laberinto que se desea escribir en un archivo.
+                  -> IO () -- ^ Valor de retorno: IO.
 escribirEnArchivo lab = do
     putStrLn "Introduzca el path del archivo donde escribir el laberinto actual"
     i <- getLine
@@ -115,15 +127,9 @@ escribirEnArchivo lab = do
     putStrLn "Se ha exportado el laberinto."
     mostrarRecibirOpciones lab
 
-cargarLaberinto lab = do
-    putStrLn "Indique el path del archivo que contiene el laberinto."
-    i <- getLine
-    --let laberintoEnMem = leerLaberinto i
-    putStrLn "Se ha importado el laberinto al sistema."
-    --mostrarRecibirOpciones laberintoEnMem
-
--- | Funcion para mostrar las opciones y recibir del user
-mostrarRecibirOpciones :: Laberinto -> IO ()
+-- | Función para mostrar las opciones y recibir las introducidas por el usuario.
+mostrarRecibirOpciones :: Laberinto -- ^ Laberinto que se tiene en memoria.
+                       -> IO () -- ^ Valor de retorno: IO.
 mostrarRecibirOpciones laberintoEnMem = do
     printMenu
     i:_ <- getLine
@@ -149,7 +155,7 @@ mostrarRecibirOpciones laberintoEnMem = do
     mostrarRecibirOpciones laberintoEnMem
 
 -- | Main
-main :: IO ()
+main :: IO () -- ^ Valor de retorno: IO.
 main = do
     putStrLn "¡Bienvenido, aventurero!"
     putStrLn "Soy el sabio del laberinto. Adelante, escoge una opción"

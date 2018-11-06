@@ -106,26 +106,41 @@ recorrerLaberinto lab (x:xs) | x == 'i' = recorrerLaberinto (voltearIzquierda la
 
 {- Funciones auxiliares-}
 
--- Funcion que a partir de una ruta dada y un laberinto, construye otro laberinto y lo agrega en la direccion
--- de la primera letra del string. 
-construirLaberinto :: Laberinto -> [Char] -> Laberinto
+{- |
+    Función que construye un Laberinto a partir de una ruta y otro Laberinto, el cual es agregado en la 
+    primera dirección que se especifica en la ruta.
+-}
+construirLaberinto :: Laberinto -- ^ Laberinto a agregar en la primera dirección de la ruta.
+                   -> [Char] -- ^ String que contiene una ruta especificada con indicadores.
+                   -> Laberinto -- ^ Valor de retorno: Trifurcación con el Laberinto parámetro agregado en la primera dirección de la ruta.
 construirLaberinto lab str = if ((length str) == 1) then
                                 agregarLaberinto (caminoSinSalida) lab (head str)
                              else
                                 agregarLaberinto (caminoSinSalida) (construirLaberinto lab (tail str)) (head str)
 
--- Funcion que dado un laberinto evalua si es una trifurcacion normal, un camino sin salida o una habitacion con tesoro 
-evaluarLaberinto :: Laberinto -> Char
+{- |
+    Función que evalúa si una Trifurcación es normal, un camino sin salida o una habitación con un Tesoro.
+-}
+evaluarLaberinto :: Laberinto -- ^ Laberinto a evaluar.
+                 -> Char -- ^ Valor de retorno: Caracter que indica qué tipo de Trifurcación es.
 evaluarLaberinto (Trifurcacion Nothing Nothing Nothing) = 'S'
 evaluarLaberinto (Trifurcacion izq recto der) = 'T'
 evaluarLaberinto (Tesoro str recto) = 'E'
 
---Funcion que retorna el string de un tesoro
-getTesoroStr :: Laberinto -> String
+{- |
+    Función que retorna la descripción de un Tesoro.
+-}
+getTesoroStr :: Laberinto -- ^ Tesoro del cual se desea saber la descripción.
+             -> String -- ^ Valor de retorno: String que contiene la descripción del Tesoro.
 getTesoroStr (Tesoro str recto) = str
 
 -- Funcion que recibe un laberinto y un string, y recorre el laberinto hasta acabar el string
-reportarParedAbierta :: Laberinto -> [Char] -> Laberinto
+{- |
+    
+-}
+reportarParedAbierta :: Laberinto -- ^
+                     -> [Char] -- ^
+                     -> Laberinto -- ^ Valor de retorno: 
 reportarParedAbierta lab [] = lab
 reportarParedAbierta lab str =
                         if (recorrerLaberinto lab ([head str]) == lab) then
@@ -136,7 +151,13 @@ reportarParedAbierta lab str =
                         else
                             reportarParedAbierta (recorrerLaberinto lab ([head str])) (tail str)
 
-reportarDerrumbe :: Laberinto -> [Char] -> [Char] -> Laberinto
+{- |
+    
+-}
+reportarDerrumbe :: Laberinto -- ^
+                 -> [Char] -- ^
+                 -> [Char] -- ^
+                 -> Laberinto -- ^ Valor de retorno:
 reportarDerrumbe (Trifurcacion izq rect der) [] [] = Trifurcacion izq rect der
 reportarDerrumbe (Trifurcacion izq rect der) str [] = Trifurcacion izq rect der
 reportarDerrumbe (Trifurcacion izq rect der) [] char = 
@@ -147,5 +168,10 @@ reportarDerrumbe (Trifurcacion izq rect der) [] char =
 reportarDerrumbe (Trifurcacion izq rect der) str char=
         reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
 
-escribirLaberinto :: FilePath -> Laberinto -> IO()
+{- |
+    Función auxiliar que escribe un Laberinto en un archivo.
+-}
+escribirLaberinto :: FilePath -- ^ Ruta del archivo a escribir.
+                  -> Laberinto -- ^ Laberinto que se desea escribir.
+                  -> IO() -- ^ Valor de retorno: IO.
 escribirLaberinto path laberinto = writeFile path $ show laberinto
