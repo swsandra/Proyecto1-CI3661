@@ -140,12 +140,12 @@ getTesoroStr (Tesoro str recto) = str
     o hasta llegar a una pared, donde construye el laberinto con el resto del string y lo agrega
     en la direccion correspondiente a la cabeza del string restante. Más detalles en README.txt.
 -}
-reportarParedAbierta :: Laberinto -- ^
-                     -> [Char] -- ^
+reportarParedAbierta :: Laberinto -- ^ Laberinto a recorrer.
+                     -> [Char] -- ^ Ruta a seguir.
                      -> Laberinto -- ^ Valor de retorno: 
 reportarParedAbierta lab [] = lab
 reportarParedAbierta lab str =
-                        if (recorrerLaberinto lab ([head str]) == lab) then
+                        if (recorrerLaberinto lab ([head str]) == lab && ((head str) == 'd' || (head str) == 'r' || (head str) == 'i')) then
                             if ((length str) == 1) then
                                 agregarLaberinto (lab) caminoSinSalida (head str)
                             else
@@ -158,9 +158,9 @@ reportarParedAbierta lab str =
     donde toma la cabeza del segundo string (un char) para reemplazar el laberinto en esa direccion
     por Nothing. Más detalles en README.txt.
 -}
-reportarDerrumbe :: Laberinto -- ^
-                 -> [Char] -- ^
-                 -> [Char] -- ^
+reportarDerrumbe :: Laberinto -- ^ Laberinto a recorrer.
+                 -> [Char] -- ^ Ruta a seguir.
+                 -> [Char] -- ^ String cuyo primer caracter es la dirección a derrumbar.
                  -> Laberinto -- ^ Valor de retorno:
 reportarDerrumbe (Trifurcacion izq rect der) [] [] = Trifurcacion izq rect der
 reportarDerrumbe (Trifurcacion izq rect der) str [] = Trifurcacion izq rect der
@@ -171,6 +171,21 @@ reportarDerrumbe (Trifurcacion izq rect der) [] char =
             'd' -> Trifurcacion izq rect (Nothing)
 reportarDerrumbe (Trifurcacion izq rect der) str char=
         reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
+
+--recorrerRecordando :: Laberinto -> [Char] -> [Char] -> Laberinto
+-- recorrerRecordando (Trifurcacion izq rect der) str strOpt =
+--     if (length str == 0) then
+--         agregarLaberinto (Tesoro strOpt Nothing) (Trifurcacion izq rect der) 'r'
+--     else do
+--         let labARecorrer = recorrerLaberinto (Trifurcacion izq rect der) (head [str])
+--         return (agregarLaberinto (Trifurcacion izq rect der) (recorrerRecordando labARecorrer (tail str) strOpt) (head str))
+-- recorrerRecordando (Tesoro strTesoro recto) str strOpt =
+--     if (length str == 0) then
+--         recto
+--     else do
+--         let labARecorrer = recorrerLaberinto (Tesoro strTesoro recto) (head str)
+--         return (agregarLaberinto (Tesoro strTesoro recto) (recorrerRecordando labARecorrer (tail str) strOpt) (head str))
+-- recorrerRecordando _ str strOpt = Nothing
 
 {- |
     Función auxiliar que escribe un Laberinto en un archivo.

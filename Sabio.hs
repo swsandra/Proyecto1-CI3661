@@ -82,6 +82,7 @@ preguntarRuta lab = do
             case (digitToInt i) of
                 1 -> preguntarRuta laberintoEnMem
                 2 -> preguntarRuta lab
+
 {- | 
     Función que imprime las instrucciones para reportar una pared abierta.
     Recibe el laberinto en memoria, y con la ruta que pide al usuario
@@ -120,6 +121,16 @@ repDerrumbeMenu lab = do
         putStrLn "Se ha concluido la operación.\n"
         mostrarRecibirOpciones laberintoEnMem
 
+-- tesoroTomado lab = do
+--     putStrLn "Indique la ruta hacia el Tesoro."
+--     instruccionesRuta
+--     i <- getLine
+--     if (evaluarLaberinto (recorrerLaberinto lab) == 'E') then do
+--         putStrLn "Tesoro tomado. \n"
+--     else do
+--         putStrLn "No existe un tesoro al final de la ruta."
+--         putStrLn "El laberinto no fue modificado.\n"
+--     mostrarRecibirOpciones lab
 
 -- | Función que escribe un Laberinto en un archivo.
 escribirEnArchivo :: Laberinto -- ^ Laberinto que se desea escribir en un archivo.
