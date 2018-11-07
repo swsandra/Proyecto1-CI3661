@@ -1,20 +1,21 @@
 module Main 
 ( main, 
-  laberintoEnMem, 
   opcionesDisponibles,
   printMenu,
   instruccionesRuta,
   comenzarLaberintoNuevo,
-  construirLaberinto,
+  preguntarRuta,
+  repParedAbiertaMenu,
+  repDerrumbeMenu,
+  tesoroTomado,
+  tesoroHallado,
+  escribirEnArchivo,
   mostrarRecibirOpciones) where
 import Laberinto
 import Data.Char (digitToInt, isDigit)
 import Data.Typeable
 import System.IO
-
--- | Función que crea una instancia de un Laberinto vacío en memoria.
-laberintoEnMem :: Laberinto -- ^ Valor de retorno: Laberinto vacío.
-laberintoEnMem = caminoSinSalida
+import Data.Maybe (fromMaybe)
 
 -- | Función que define las opciones del menú.
 opcionesDisponibles :: [(String, String)] -- ^ Valor de retorno: Diccionario de número de opción y descripción de la opción.
@@ -88,7 +89,7 @@ preguntarRuta lab = do
     Recibe el laberinto en memoria, y con la ruta que pide al usuario
     se llama a la función correspondiente.
 -}
-repParedAbiertaMenu :: Laberinto -- ^ 
+repParedAbiertaMenu :: Laberinto -- ^ Laberinto a recorrer.
                     -> IO () -- ^ Valor de retorno: IO.
 repParedAbiertaMenu lab = do
     putStrLn "Introduzca una ruta para abrir la pared, de ser posible"
@@ -103,7 +104,7 @@ repParedAbiertaMenu lab = do
     Recibe el laberinto en memoria, y con una ruta y dirección que pide al
     usuario se llama a la función correspondiente.
 -}
-repDerrumbeMenu :: Laberinto -- ^ .
+repDerrumbeMenu :: Laberinto -- ^ Laberinto a recorrer.
                 -> IO () -- ^ Valor de retorno: IO.
 repDerrumbeMenu lab = do
     putStrLn "Introduzca una ruta para derrumbar una pared, de ser posible."
@@ -121,16 +122,48 @@ repDerrumbeMenu lab = do
         putStrLn "Se ha concluido la operación.\n"
         mostrarRecibirOpciones laberintoEnMem
 
--- tesoroTomado lab = do
---     putStrLn "Indique la ruta hacia el Tesoro."
---     instruccionesRuta
---     i <- getLine
---     if (evaluarLaberinto (recorrerLaberinto lab) == 'E') then do
---         putStrLn "Tesoro tomado. \n"
---     else do
---         putStrLn "No existe un tesoro al final de la ruta."
---         putStrLn "El laberinto no fue modificado.\n"
---     mostrarRecibirOpciones lab
+{- |
+    Función que recibe un laberinto y pide al usuario una ruta, con el objeto
+    de quitar el tesoro al final de dicha ruta, de existir el mismo.
+-}
+tesoroTomado :: Laberinto -- ^  Laberinto a recorrer.
+                -> IO () -- ^ Valor de retorno: IO.
+tesoroTomado lab = do
+    putStrLn "Indique la ruta hacia el Tesoro."
+    instruccionesRuta
+    i <- getLine
+    let finalRuta = recorrerLaberinto lab i
+    if (evaluarLaberinto finalRuta == 'E') then do
+        let laberintoEnMem = fromMaybe caminoSinSalida (tomarTesoro lab i finalRuta)
+        putStrLn "Tesoro tomado. El laberinto fue modificado. \n"
+        mostrarRecibirOpciones laberintoEnMem
+    else do
+        putStrLn "No existe un tesoro al final de la ruta."
+        putStrLn "El laberinto no fue modificado.\n"
+        mostrarRecibirOpciones lab
+
+{- |
+    Función que recibe un laberinto y pide al usuario una ruta y un string,
+    con el objeto de agregar un tesoro al final de la ruta creado a partir
+    del string.
+-}
+tesoroHallado :: Laberinto -- ^  Laberinto a recorrer.
+                -> IO () -- ^ Valor de retorno: IO.
+tesoroHallado lab = do
+    putStrLn "Indique la ruta hacia donde se colocará el Tesoro."
+    instruccionesRuta
+    i <- getLine
+    putStrLn "Indique el string del nuevo Tesoro."
+    m <- getLine
+    let finalRuta = recorrerLaberinto lab i
+    if (evaluarLaberinto finalRuta == 'E') then do
+        let laberintoEnMem = fromMaybe caminoSinSalida (hallarTesoro lab i m)
+        putStrLn "Tesoro tomado. El laberinto fue modificado. \n"
+        mostrarRecibirOpciones laberintoEnMem
+    else do
+        putStrLn "Ya hay un tesoro en esta ruta."
+        putStrLn "El laberinto no fue modificado.\n"
+        mostrarRecibirOpciones lab
 
 -- | Función que escribe un Laberinto en un archivo.
 escribirEnArchivo :: Laberinto -- ^ Laberinto que se desea escribir en un archivo.
@@ -156,8 +189,8 @@ mostrarRecibirOpciones laberintoEnMem = do
             2 -> preguntarRuta laberintoEnMem
             3 -> repParedAbiertaMenu laberintoEnMem
             4 -> repDerrumbeMenu laberintoEnMem
-            --5 -> tesorotomado
-            --6 -> tesorohallado
+            5 -> tesoroTomado laberintoEnMem
+            6 -> tesoroHallado laberintoEnMem
             7 -> escribirEnArchivo laberintoEnMem
             8 -> do
                 putStrLn "Indique el path del archivo que contiene el laberinto."

@@ -51,6 +51,24 @@ En Laberinto.hs se encuentra tanto la definición de la data Laberinto, como las
 	Recorre el laberinto hasta acabar con los caracteres del string de ruta. Una vez al final de la ruta, retorna la trifurcación actual con la dirección indicada por el usuario en "Nothing". 
 	++NOTA: Es importante señalar que una vez recorrido el laberinto, no puede devoverse, se queda en el punto indicado. Esto es debido a la interpretación propia del equipo de trabajo del proyecto dado.
 
+4) "tomarTesoro"
+	Recorre el laberinto de la misma manera que lo hace la función "construirLaberinto" y "reportarParedAbierta". Se llama a sí misma de manera recursiva y va anexando los resultados.
+	Ejm: tomarTesoro (Trifurcacion Nothing Nothing (Trifurcacion (Tesoro "ah" (Tesoro "otro" Nothing)) Nothing Nothing)) "di" (Tesoro "ah" Nothing)
+		-- Primera vez: Nota que si se gira a la derecha con "d", no se encuentra el tesoro, por lo cual anexa el resultado de tomarTesoro con lo que se obtiene al girar a la derecha.
+		-- Segunda vez: Nota que si gira a la izquiera con "i" se encuentra el tesoro, por lo cual retorna la trifurcación quitando el tesoro de por medio y uniendo lo que está más allá de él. Así: (Trifurcación (Tesoro "otro" Nothing) Nothing Nothing)
+		-- Retorno a la primera: anexa el resultado a lo correspondiente.
+		Resultado: (Trifurcacion Nothing Nothing (Trifurcación (Tesoro "otro" Nothing))
+
+5) "hallarTesoro"
+	Funciona de manera sililar a "tomarTesoro", sólo que en vez de un Tesoro recibe un String para
+	instanciar un tesoro e insertarlo en el laberinto. Se llama a sí misma de manera recursiva y va anexando los resultados.
+	Ejm: hallarTesoro (Trifurcacion Nothing Nothing (Trifurcación (Tesoro "otro" Nothing)) "di" "ah"
+		-- Primera vez: la ruta no es vacía ni cuando se gira a la derecha da el mismo laberinto (esto ocurre cuando es un movimiento inválido), por lo que se anexa al laberinto en esa dirección lo que se obtiene de llamar nuevamente la función sobre el laberinto cuando se gira a la derecha. Esto es, se llama sobre (Trifurcación (Tesoro "otro" Nothing)).
+		-- Segunda vez: Nota que si gira a la izquiera con "i" aún no cumple las condiciones de arriba (largo de ruta 0 o laberinto que viene igual a actual) por lo que se llama nuevamente a la función, ahora sobre (Tesoro "otro" Nothing).
+		-- Tercera vez: El largo de la ruta es 0, por lo que crea el Tesoro con el string dado y une lo que quedaba del laberinto al mismo. Por lo que quedaría (Tesoro "ah" (Tesoro "otro" Nothing)
+		-- Retorno a la segunda: anexa el resultado a lo correspondiente y queda: (Trifurcacion (Tesoro "ah" (Tesoro "otro" Nothing)) Nothing Nothing)
+		-- Retorno a la primera: anexa el resultado a lo correspondiente.
+		Resultado: (Trifurcacion Nothing Nothing (Trifurcacion (Tesoro "ah" (Tesoro "otro" Nothing)) Nothing Nothing)) 
 
 
 
@@ -61,4 +79,4 @@ Para representar las opciones disponibles, se definió la función "opcionesDisp
 
 Con el objeto de separar la ejecución del programa del main, se implementó la función "mostrarRecibirOpciones", que pediría una instrucción al usuario, un número relacionado en el diccionario anteriormente mencionado, y redireccionaría a la función correspondiente a esa decisión. El flujo interno está diseñado de tal manera que, al concluir la operación elegida, el usuario sea nuevamente redirigido a "mostarRecibirOpciones".
 
-La mayor parte de las funciones involucradas en el flujo del programa reciben el laberinto en Memoria o "laberintoEnMem", a manera de mantener y actualizar la instancia según sea indicado. Asimismo, se valen de las funciones definidas en Laberinto.hs para conseguir los valores necesarios para operar correctamente.
+La mayor parte de las funciones involucradas en el flujo del programa reciben el laberinto en Memoria o "laberintoEnMem", a manera de mantener y actualizar la instancia según sea indicado. Asimismo, se valen de las funciones definidas en Laberinto.hs para conseguir los valores necesarios y poder operar correctamente.

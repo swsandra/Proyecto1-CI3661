@@ -12,6 +12,8 @@ module Laberinto
   getTesoroStr,
   reportarParedAbierta,
   reportarDerrumbe,
+  hallarTesoro,
+  tomarTesoro,
   escribirLaberinto
 )
 where
@@ -142,7 +144,7 @@ getTesoroStr (Tesoro str recto) = str
 -}
 reportarParedAbierta :: Laberinto -- ^ Laberinto a recorrer.
                      -> [Char] -- ^ Ruta a seguir.
-                     -> Laberinto -- ^ Valor de retorno: 
+                     -> Laberinto -- ^ Valor de retorno: Laberinto donde quedó el recorrido con el nuevo laberinto unido por la ruta correspondiente.
 reportarParedAbierta lab [] = lab
 reportarParedAbierta lab str =
                         if (recorrerLaberinto lab ([head str]) == lab && ((head str) == 'd' || (head str) == 'r' || (head str) == 'i')) then
@@ -161,7 +163,7 @@ reportarParedAbierta lab str =
 reportarDerrumbe :: Laberinto -- ^ Laberinto a recorrer.
                  -> [Char] -- ^ Ruta a seguir.
                  -> [Char] -- ^ String cuyo primer caracter es la dirección a derrumbar.
-                 -> Laberinto -- ^ Valor de retorno:
+                 -> Laberinto -- ^ Valor de retorno: Laberinto donde quedó el recorrido con la dirección indicada eliminada.
 reportarDerrumbe (Trifurcacion izq rect der) [] [] = Trifurcacion izq rect der
 reportarDerrumbe (Trifurcacion izq rect der) str [] = Trifurcacion izq rect der
 reportarDerrumbe (Trifurcacion izq rect der) [] char = 
@@ -172,20 +174,52 @@ reportarDerrumbe (Trifurcacion izq rect der) [] char =
 reportarDerrumbe (Trifurcacion izq rect der) str char=
         reportarDerrumbe (recorrerLaberinto (Trifurcacion izq rect der) str) [] char
 
---recorrerRecordando :: Laberinto -> [Char] -> [Char] -> Laberinto
--- recorrerRecordando (Trifurcacion izq rect der) str strOpt =
---     if (length str == 0) then
---         agregarLaberinto (Tesoro strOpt Nothing) (Trifurcacion izq rect der) 'r'
---     else do
---         let labARecorrer = recorrerLaberinto (Trifurcacion izq rect der) (head [str])
---         return (agregarLaberinto (Trifurcacion izq rect der) (recorrerRecordando labARecorrer (tail str) strOpt) (head str))
--- recorrerRecordando (Tesoro strTesoro recto) str strOpt =
---     if (length str == 0) then
---         recto
---     else do
---         let labARecorrer = recorrerLaberinto (Tesoro strTesoro recto) (head str)
---         return (agregarLaberinto (Tesoro strTesoro recto) (recorrerRecordando labARecorrer (tail str) strOpt) (head str))
--- recorrerRecordando _ str strOpt = Nothing
+tomarTesoro :: Laberinto -- ^ Laberinto a recorrer.
+            -> [Char] -- ^ Ruta a seguir.
+            -> Laberinto -- ^ Tesoro a eliminar.
+            -> Maybe Laberinto -- ^ Valor de retorno: Laberinto con el tesoro al final de la ruta eliminado.
+tomarTesoro (Trifurcacion izq rect der) str (Tesoro strTesoro rectTesoro) = do
+    let lab = Trifurcacion izq rect der
+    let tsr = Tesoro strTesoro rectTesoro
+    let labNuevo = recorrerLaberinto lab ([head str])
+    if (labNuevo == tsr) then
+        case (head str) of
+            'i' -> return (Trifurcacion rectTesoro rect der)
+            'r' -> return (Trifurcacion izq rectTesoro der)
+            'd' -> return (Trifurcacion izq rect rectTesoro)
+            _   -> return lab
+    else
+        case (head str) of
+            'i' -> return (Trifurcacion (tomarTesoro labNuevo (tail str) (Tesoro strTesoro rectTesoro)) rect der)
+            'r' -> return (Trifurcacion izq (tomarTesoro labNuevo (tail str) (Tesoro strTesoro rectTesoro)) der)
+            'd' -> return (Trifurcacion izq rect (tomarTesoro labNuevo (tail str) (Tesoro strTesoro rectTesoro)))
+            _   -> return lab
+
+hallarTesoro :: Laberinto -- ^ Laberinto a recorrer.
+            -> [Char] -- ^ Ruta a seguir.
+            -> String -- ^ String que llevará el nuevo tesoro.
+            -> Maybe Laberinto -- ^ Valor de retorno: Laberinto con el nuevo tesoro insertado al final de la ruta.
+hallarTesoro (Trifurcacion izq rect der) str strTesoro = do
+    let lab = Trifurcacion izq rect der
+    let labNuevo = recorrerLaberinto lab ([head str])
+    if (length str == 0 || labNuevo == lab) then
+        return (agregarLaberinto (Tesoro strTesoro Nothing) lab 'r')
+    else
+        case (head str) of
+            'i' -> return (Trifurcacion (hallarTesoro labNuevo (tail str) strTesoro) rect der)
+            'r' -> return (Trifurcacion izq (hallarTesoro labNuevo (tail str) strTesoro) der)
+            'd' -> return (Trifurcacion izq rect (hallarTesoro labNuevo (tail str) strTesoro))
+            _   -> return lab
+hallarTesoro (Tesoro strTesoroLab rect) str strTesoro = do
+    let lab = Tesoro strTesoroLab rect
+    let labNuevo = recorrerLaberinto lab ([head str])
+    if (length str == 0 || labNuevo == lab) then
+        return (agregarLaberinto (Tesoro strTesoro Nothing) lab 'r')
+    else
+        case (head str) of
+            'r' -> return (Tesoro strTesoroLab (hallarTesoro labNuevo (tail str) strTesoro))
+            _   -> return lab
+
 
 {- |
     Función auxiliar que escribe un Laberinto en un archivo.
