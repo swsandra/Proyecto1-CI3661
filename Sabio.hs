@@ -156,7 +156,7 @@ tesoroHallado lab = do
     putStrLn "Indique el string del nuevo Tesoro."
     m <- getLine
     let finalRuta = recorrerLaberinto lab i
-    if (evaluarLaberinto finalRuta == 'E') then do
+    if (evaluarLaberinto finalRuta /= 'E') then do
         let laberintoEnMem = fromMaybe caminoSinSalida (hallarTesoro lab i m)
         putStrLn "Tesoro tomado. El laberinto fue modificado. \n"
         mostrarRecibirOpciones laberintoEnMem
