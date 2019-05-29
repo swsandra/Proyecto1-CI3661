@@ -96,7 +96,7 @@ En Laberinto.hs se encuentra tanto la definición de la data Laberinto, como las
 
 
 
-### ACERCA DEL CLIENTE
+### Acerca del Cliente
 
 Para representar las opciones disponibles, se definió la función `opcionesDisponibles`, la cual cumple el papel de diccionario, relacionando un número con una opción. Las mismas son impresas por medio de `printMenu`.
 
